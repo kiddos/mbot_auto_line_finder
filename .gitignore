@@ -1,0 +1,8 @@
+# ignore vim temp files
+*.swp
+
+# ignore build files
+.build/*
+
+
+
