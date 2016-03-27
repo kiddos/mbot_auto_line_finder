@@ -1,10 +1,19 @@
 #include <Arduino.h>
 #include "blackwhitedetector.h"
 
+void printmat(const Mat &m) {
+  for (uint32_t i = 0 ; i < m.nrows ; ++ i) {
+    for (uint32_t j = 0 ; j < m.ncols ; ++ j) {
+      Serial.print(m.data[i * m.ncols + j]);
+      Serial.print(" ");
+    }
+    Serial.println("");
+  }
+}
 static void randmat(Mat &m) {
   for (uint32_t i = 0 ; i < m.nrows ; ++ i) {
     for (uint32_t j = 0 ; j < m.ncols ; ++ j)
-      m.data[i * m.ncols + j] = 1.0f * random(10000) / 10000;
+      m.data[i * m.ncols + j] = 1.0f * random(1000) / 1000;
   }
 }
 Mat sigmoid(const Mat &m) {
@@ -82,7 +91,7 @@ BlackWhiteDetector::BlackWhiteDetector()
     : theta1(Mat(2, 2)), theta2(Mat(3, 1)),
       grad1(Mat(2, 2)), grad2(Mat(3, 1)),
       grad1check(Mat(2, 2)), grad2check(Mat(3, 1)),
-      alpha(1e-4), beta(1e-1), p(5e-2) {
+      alpha(1e-3), beta(1e-1), p(5e-2) {
   x = Mat::zero(1, 2);
 
   // random initialize
@@ -98,6 +107,28 @@ void BlackWhiteDetector::feeddata(float x, bool output) {
 
   theta1 = theta1 - grad1 * alpha;
   theta2 = theta2 - grad2 * alpha;
+
+  //Serial.print("grad 1:");
+  //printmat(grad1);
+  //Serial.print("grad 2:");
+  //printmat(grad2);
+
+  //computecost(theta1, theta2);
+  //computegrad();
+  //Serial.print("grad 1 check:");
+  //printmat(grad1check);
+
+  //Serial.print("grad 2 check:");
+  //printmat(grad2check);
+
+  /*if (output) {*/
+    /*Serial.print("\rx = ");*/
+    /*Serial.print(x);*/
+    /*Serial.print(" hypothesis: ");*/
+    /*Serial.print(h.data[0]);*/
+    /*Serial.print(" | cost: ");*/
+    /*Serial.print(computecost(theta1, theta2));*/
+  /*}*/
 }
 void BlackWhiteDetector::forwardprop() {
   z2 = x * theta1;
@@ -161,17 +192,38 @@ void BlackWhiteDetector::computegrad() {
     }
   }
 }
-label BlackWhiteDetector::predict(float x) {
+label BlackWhiteDetector::predict(float x, float &a1, float &a2) {
+  Mat blackX(1, 2);
+  blackX.data[0] = 1;
+  blackX.data[1] = 0;
+  Mat blackZ2 = blackX * theta1;
+  Mat blackA2 = sigmoid(blackZ2);
+  int index = 0;
+  if (blackA2.data[1] >= blackA2.data[0]) index = 1;
+
   Mat X(1, 2);
   X.data[0] = 1;
   X.data[1] = x;
   Mat Z2 = X * theta1;
   Mat A2 = sigmoid(Z2);
 
-  if (A2.data[0] >= A2.data[1]) {
-    return class1;
+  a1 = A2.data[0];
+  a2 = A2.data[1];
+
+  /*Serial.print("x: ");*/
+  /*Serial.print(x);*/
+  /*Serial.print(" | cost: ");*/
+  /*Serial.print(computecost(theta1, theta2));*/
+  /*Serial.print(" | hypothesis: ");*/
+  /*Serial.println(sigmoid(addones(A2) * theta2).data[0]);*/
+
+  if (A2.data[index] >= A2.data[1-index]) {
+    return BLACK;
   } else {
-    return class2;
+    return WHITE;
   }
+}
+float BlackWhiteDetector::getlastx() {
+  return x.data[1];
 }
 

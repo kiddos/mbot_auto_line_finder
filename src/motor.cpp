@@ -14,7 +14,10 @@ void Motor::setup() {
 }
 void Motor::run(int speed) {
   int dir = HIGH;
-  if (speed >= 0) dir = LOW;
+  if (speed < 0) {
+    dir = LOW;
+    speed = -speed;
+  }
   digitalWrite(pin.dirpin, dir);
   analogWrite(pin.speedpin, speed);
 }

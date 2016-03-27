@@ -8,7 +8,7 @@
 using core::mat;
 typedef mat<float> Mat;
 
-enum label {class1, class2};
+enum label {BLACK, WHITE};
 
 class BlackWhiteDetector {
  public:
@@ -18,7 +18,8 @@ class BlackWhiteDetector {
   void feeddata(float x, bool output);
   double computecost(const Mat &theta1, const Mat &theta2);
   void computegrad();
-  label predict(float x);
+  label predict(float x, float &a1, float &a2);
+  float getlastx();
 
  private:
   Mat theta1, theta2;
