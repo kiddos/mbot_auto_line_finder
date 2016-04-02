@@ -1,15 +1,15 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "blackwhitedetector.h"
 
-void printmat(const Mat &m) {
-  for (uint32_t i = 0 ; i < m.nrows ; ++ i) {
-    for (uint32_t j = 0 ; j < m.ncols ; ++ j) {
-      Serial.print(m.data[i * m.ncols + j]);
-      Serial.print(" ");
-    }
-    Serial.println("");
-  }
-}
+//void printmat(const Mat &m) {
+  //for (uint32_t i = 0 ; i < m.nrows ; ++ i) {
+    //for (uint32_t j = 0 ; j < m.ncols ; ++ j) {
+      //Serial.print(m.data[i * m.ncols + j]);
+      //Serial.print(" ");
+    //}
+    //Serial.println("");
+  //}
+//}
 static void randmat(Mat &m) {
   for (uint32_t i = 0 ; i < m.nrows ; ++ i) {
     for (uint32_t j = 0 ; j < m.ncols ; ++ j)
